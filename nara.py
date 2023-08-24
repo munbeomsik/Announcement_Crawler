@@ -147,11 +147,11 @@ def get_impormation(href):
     money_info["추정가격"] = calcul_money
 
     result = None
-    table = soup.find('table',summary='첨부 파일 정보')
+    table = soup.find('table',summary= lambda value: value and "첨부" in value)
     if table is None or table == []:
         table = soup.find_all('table', class_='table_list_attchFileTbl')
         for tab in table:
-            result = tab.find('span', text= '파일')
+            result = tab.find('span', text= lambda value: value and "파일" in value)
             if result is not None:
                 table = tab
                 break
@@ -170,7 +170,7 @@ def get_impormation(href):
             file_info['파일명'] = a.get('href').split('d(\'')[1].split('\',')[1].split('\');')[0]
             file_info['링크'] = a.get('href').split('d(\'')[1].split('\',')[0]
         else:
-            file_info['파일명'] = a.get('href').split('d(\'')[1].split('\', \'')[1].split('\');')[0]
+            file_info['파일명'] = a.get('href').split('d(\'')[1].split('\',')[1].split('\');')[0][2:]
             file_info['링크'] = a.get('href').split('d(\'')[1].split('\', ')[0]
         down_info.append(file_info)
     infomation = {'공고일반정보':general_info, '입찰집행 및 진행 정보':bid_info, '예정가격 결정 및 입찰금액 정보':money_info, '첨부 파일 정보':down_info}
@@ -198,7 +198,7 @@ def get_file(down_info, number):
         with open(filename, "wb") as file:
             response = requests.get(link)
             file.write(response.content)
-        return end_directort
+    return end_directort
 
 def writer(href, header, data, filename):
     try:
